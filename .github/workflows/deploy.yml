@@ -7,25 +7,23 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Runs on GitHub-hosted VM
+    runs-on: ubuntu-latest  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install AWS CLI  # Ensures AWS CLI is installed
+      - name: Install AWS CLI  
         run: |
           sudo apt update
           sudo apt install -y awscli
-
-      - name: Verify AWS CLI installation
-        run: aws --version  # Should print the installed AWS CLI version
+          aws --version  # Verify AWS CLI installation
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Change this to your AWS region
+          aws-region: ap-south-1  # Change to your region
 
       - name: List S3 Buckets (Test Command)
-        run: aws s3 ls  # Checks if AWS CLI is working
+        run: aws s3 ls
