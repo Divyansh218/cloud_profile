@@ -1,33 +1,31 @@
-name: Deploy to S3
+name: Deploy to AWS
 
 on:
   push:
     branches:
-      - main  # Change this if needed
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-latest  # Runs on GitHub-hosted VM
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install AWS CLI  # Ensures AWS CLI is installed
+        run: |
+          sudo apt update
+          sudo apt install -y awscli
+
+      - name: Verify AWS CLI installation
+        run: aws --version  # Should print the installed AWS CLI version
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1  # Change this to your AWS region
 
-      - name: Deploy to S3
-        run: |
-          aws s3 sync ./build s3://${{ secrets.S3_BUCKET_NAME }} --delete
-
-      - name: Invalidate CloudFront Cache (if using CloudFront)
-        run: |
-          aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        continue-on-error: true  # Avoid failure if not using CloudFront
+      - name: List S3 Buckets (Test Command)
+        run: aws s3 ls  # Checks if AWS CLI is working
